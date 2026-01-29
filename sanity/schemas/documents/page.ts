@@ -138,11 +138,4 @@ export default defineType({
       }
     },
   },
-  options: {
-    previewUrl: {
-      previewMode: {
-        enable: '/api/draft',
-      },
-    },
-  },
 })
