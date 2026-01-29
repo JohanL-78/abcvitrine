@@ -1,0 +1,206 @@
+Rôle : Tu es un Lead Developer spécialisé en JAMStack (Next.js App Router & Sanity.io).
+Objectif : Générer le scaffold (structure de code) initial complet pour un projet de site vitrine haut de gamme.
+Contexte : Le projet doit être "Pixel Perfect", ultra-performant (Core Web Vitals), et surtout gérer une internationalisation native (FR/EN) avec un CMS totalement flexible (Page Builder).
+
+Stack Technique imposée :
+
+Framework : Next.js 15.5.9 (App Router). Si nécessaire : react@19.2.3 react-dom@19.2.3
+Langage : TypeScript (Strict).
+CMS : Sanity.io (v3) intégré dans le repo (monorepo ou dossier /sanity à la racine).
+Styling : Tailwind CSS.
+Composants UI : shadcn/ui (optionnel, mais recommandé pour la vitesse).
+I18n : Routing international natif (/fr/..., /en/...) via Middleware.
+1. Structure & Architecture attendue
+Je veux que tu m'aides à monter le projet étape par étape ou que tu me génères les fichiers clés. Voici les spécificités critiques à respecter :
+
+A. Gestion de l'Internationalisation (Point Critique)
+
+Mise en place d'un Middleware Next.js pour gérer la détection de langue et la réécriture d'URL.
+Structure des dossiers app/[lang]/....
+Stratégie CMS : Je veux une stratégie "Document Level Translation" (chaque langue est un document unique dans Sanity, reliés entre eux). C'est nécessaire pour avoir des slugs différents (/fr/a-propos et /en/about-us).
+Inclusion des balises hreflang et canonical automatiques dans le layout.tsx ou via generateMetadata.
+B. Architecture "Page Builder" (Point Critique)
+
+Le client doit pouvoir construire ses pages avec des blocs.
+Dans Sanity, le document page doit avoir un champ content de type array (visualisé comme des "Sections").
+Crée-moi les schémas Sanity pour 3 blocs de base pour commencer :
+hero (Titre, Sous-titre, Image, CTA).
+textWithImage (Image gauche/droite, Riche texte).
+grid (Titre, Répétiteur d'items).
+Côté Next.js, je veux un composant <PageBuilder sections={data.content} /> qui switch proprement entre les composants Front en fonction du _type Sanity.
+C. SEO & Performance
+
+Utilisation de next/image partout.
+Mise en place de generateMetadata dans les pages dynamiques pour récupérer Title/Description depuis Sanity.
+Configuration de base pour le sitemap.xml dynamique.
+D. Preview Mode (Visual Editing)
+
+Configuration du plugin presentationTool dans sanity.config.ts.
+Mise en place de sanity/lib/client.ts, sanity/lib/token.ts et des fonctions de fetch (sanityFetch) qui gèrent le Draft Mode (brouillon) vs Production.
+2. Actions demandées maintenant
+Génère-moi le code et les instructions pour :
+
+L'initialisation : Commandes pour créer le projet Next.js avec Sanity pré-configuré.
+Le schéma Sanity "Page" : Le code TypeScript du schéma avec les champs SEO, le Slug multilingue (ou document séparé) et le Page Builder array.
+Le Middleware i18n : Le fichier middleware.ts robuste pour gérer /fr et /en par défaut.
+La Route Dynamique (Catch-all) : Le fichier app/[lang]/[[...slug]]/page.tsx qui :
+Récupère le paramètre lang et slug.
+Fait la requête GROQ à Sanity pour trouver la page correspondante à la langue et au slug.
+Gère la 404 si non trouvé.
+Passe les données au composant <PageBuilder />.
+La requête GROQ : Une requête optimisée qui récupère la page, ses blocs, et les métadonnées SEO, filtrée par langue.
+Instructions pour l'utilisateur (moi) :
+Avant de générer le code, explique-moi brièvement la stratégie que tu retiens pour lier la page FR à la page EN dans Sanity (pour les balises hreflang), car c'est mon point de doute principal.
+
+//
+Voici la lettre de cadrage du client : 
+Projet site vitrine 1
+
+www.abcm.io
+
+1. Architecture générale du projet
+Site vitrine d’environ 50 pages de contenu
+15 templates de pages distincts à intégrer côté front
+Architecture :
+Frontend : Next.js
+Backend : CMS headless (à préciser : Payload, Directus, Sanity, etc.)
+Objectif :
+→ Site hautement performant,
+→ Ultra optimisé SEO,
+→ Back-office 100% administrable par le client (texte, images, structure)
+
+2. Intégration frontend (Next.js)
+Chiffrage attendu pour :
+Mise en place projet Next.js propre (architecture, routing, env, config)
+Intégration HTML/CSS des 15 templates à partir de la maquette fournie
+Responsive desktop / tablette / mobile sur tous les templates
+Composants réutilisables :
+Header / Footer
+Blocs éditoriaux
+Hero
+Grilles
+
+Projet site vitrine 1 1
+
+Sliders éventuels
+CTA
+Formulaires
+Etc.
+Gestion des états (hover, focus, animations légères si prévues dans la
+maquette)
+Gestion du routing dynamique pour les pages CMS
+
+3. Mise en place du CMS headless
+Back-office sur mesure, orienté client final non technique :
+Modélisation des contenus
+Création des collections :
+Pages
+Modèles de pages (templates)
+Sections dynamiques
+Médias (images)
+SEO
+Langues
+Champs à prévoir :
+Textes simples
+Rich text
+Images
+Galerie
+Liens internes / externes
+CTA
+Répétiteurs (blocs duplicables)
+Champs conditionnels selon le template
+
+Projet site vitrine 1 2
+
+Objectif :
+Le client doit pouvoir :
+Modifier tous les textes
+Remplacer toutes les images
+Ajouter/supprimer des blocs de contenu
+Créer de nouvelles pages sans intervention technique
+Gérer la version EN facilement
+
+4. Connexion CMS ↔ Next.js
+Connexion API entre CMS et front
+Gestion du fetching des données
+Pages dynamiques (SSG / ISR selon stratégie)
+Gestion des erreurs (page vide, contenu manquant)
+Prévisualisation des contenus si possible (preview mode)
+Gestion des slugs dynamiques
+Gestion propre des routes multilingues
+
+5. Multilingue (FR / EN)
+Structure multilingue :
+URLs propres (ex : /fr/... et /en/... ou domaine/en)
+Champs traduisibles dans le CMS
+Gestion des traductions dans le back-office
+SEO multilingue :
+Balises hreflang
+Canonical par langue
+Sélecteur de langue fonctionnel côté front
+Le développeur doit chiffrer :
+
+Projet site vitrine 1 3
+
+Mise en place technique
+Gestion CMS
+Routing spécifique
+
+6. SEO technique avancé
+Le site doit être parfaitement optimisé SEO.
+À chiffrer :
+Rendu :
+SSG ou ISR optimisé
+Excellents scores Lighthouse
+Performances :
+Optimisation images (next/image)
+Lazy loading
+Code splitting
+Optimisation bundle
+SEO technique :
+Balises meta dynamiques (title, description, OG)
+Données structurées (Schema.org si nécessaire)
+Sitemap.xml dynamique
+Robots.txt propre
+URLs propres
+Gestion canonical
+Pagination SEO si nécessaire
+Accessibilité :
+Balises ARIA
+Structure Hn cohérente
+Core Web Vitals :
+LCP / CLS / INP optimisés
+
+Projet site vitrine 1 4
+
+7. Formulaires
+S’il y a des formulaires :
+Formulaire(s) de contact
+Validation des champs
+Protection anti-spam (honeypot ou reCAPTCHA)
+Envoi email ou webhook (Make, Zapier, API...)
+
+8. Environnement & livraison
+À inclure dans le chiffrage :
+Mise en place environnements :
+Dev
+Préprod
+Prod
+Configuration hébergement :
+Front (Vercel, autre ?)
+CMS (serveur, cloud, etc.)
+Variables d’environnement
+Build & déploiement
+Documentation minimale pour reprise
+Livraison propre du repo
+
+9. Maintenance & évolutivité
+Tu peux aussi lui demander une estimation pour :
+Temps de maintenance technique mensuelle
+Facilité d’évolution :
+Ajout de nouveaux templates
+Ajout de nouvelles langues
+
+Projet site vitrine 1 5
+
+Scalabilité
